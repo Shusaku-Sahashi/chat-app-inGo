@@ -23,10 +23,11 @@ func (h httpHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 func main() {
 	r := NewRoom()
-	http.Handle("/", &httpHandler{filename: "chat.html"})
+	http.Handle("/", MustAuth(&httpHandler{filename: "chat.html"}))
 	http.Handle("/room", r)
 	go r.Run()
 
+	//TODO: export conf to JSON or YAML file
 	server := http.Server{
 
 		Addr: "127.0.0.1:8080",
