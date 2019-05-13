@@ -11,14 +11,14 @@ import (
 type httpHandler struct {
 	once     sync.Once
 	filename string
-	templ    *template.Template
+	temple   *template.Template
 }
 
 func (h httpHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	h.once.Do(func() {
-		h.templ = template.Must(template.ParseFiles(filepath.Join("template", h.filename)))
+		h.temple = template.Must(template.ParseFiles(filepath.Join("template", h.filename)))
 	})
-	h.templ.Execute(w, req)
+	h.temple.Execute(w, req)
 }
 
 func main() {

@@ -15,7 +15,7 @@ func (h *authHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Location", "/login")
 		w.WriteHeader(http.StatusTemporaryRedirect)
 	} else if err != nil {
-		panic(fmt.Sprint("AuthorizationErr: %s", err))
+		panic(fmt.Sprintf("AuthorizationErr: %s", err))
 	} else {
 		// Pass Authentication
 		h.next.ServeHTTP(w, req)

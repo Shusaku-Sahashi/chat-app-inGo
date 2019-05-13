@@ -31,7 +31,7 @@ func (r *room) Run() {
 		select {
 		case client := <-r.join:
 			r.clients[client] = true
-			fmt.Println("join clinet")
+			fmt.Println("join client")
 		case client := <-r.leave:
 			delete(r.clients, client)
 			close(client.send)
