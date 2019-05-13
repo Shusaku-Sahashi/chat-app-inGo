@@ -8,13 +8,13 @@ import (
 	"text/template"
 )
 
-type httpHandler struct {
+type templateHandler struct {
 	once     sync.Once
 	filename string
 	temple   *template.Template
 }
 
-func (h httpHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (h templateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	h.once.Do(func() {
 		h.temple = template.Must(template.ParseFiles(filepath.Join("template", h.filename)))
 	})
@@ -23,7 +23,8 @@ func (h httpHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 func main() {
 	r := NewRoom()
-	http.Handle("/", MustAuth(&httpHandler{filename: "chat.html"}))
+	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"}))
+	http.Handle("/login", &templateHandler{filename: "login.html"})
 	http.Handle("/room", r)
 	go r.Run()
 
