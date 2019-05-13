@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 type authHandler struct {
@@ -28,5 +29,21 @@ MustAuth is decoretor for handler that needed to authentication.
 func MustAuth(handler http.Handler) http.Handler {
 	return &authHandler{
 		next: handler,
+	}
+}
+
+func loginHandler(w http.ResponseWriter, req *http.Request) {
+	seg := strings.Split(req.URL.Path, "/")
+	action := seg[2]
+	provider := seg[3]
+
+	switch action {
+	case "login":
+		fmt.Fprint(w, "TODO:Login処理", provider)
+	case "callback":
+		fmt.Fprint(w, "TODO:Callback処理", provider)
+	default:
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "アクション%sには非対応です。", action)
 	}
 }
