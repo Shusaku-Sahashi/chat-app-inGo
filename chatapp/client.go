@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
 
 type client struct {
-	socket *websocket.Conn
-	send   chan []byte
-	room   *room
+	socket   *websocket.Conn
+	send     chan *message
+	room     *room
+	userData map[string]interface{}
 }
 
 /*
@@ -19,13 +21,14 @@ This method detect WebSocket message and send forward all of clients that is joi
 func (c *client) Read() {
 	defer c.socket.Close()
 	for {
-		_, msg, err := c.socket.ReadMessage()
-		fmt.Println("receave message")
+		var msg = new(message)
+		err := c.socket.ReadJSON(msg)
 		if err != nil {
 			fmt.Println("error!!! websocket can not receave message.", err)
 			break
 		}
-		fmt.Println("receave message")
+		msg.When = time.Now()
+		msg.Name = c.userData["name"].(string)
 		c.room.forward <- msg
 	}
 }
@@ -36,7 +39,7 @@ Write is WebSocket Message Sender
 func (c *client) Write() {
 	defer c.socket.Close()
 	for msg := range c.send {
-		if err := c.socket.WriteMessage(websocket.TextMessage, msg); err != nil {
+		if err := c.socket.WriteJSON(msg); err != nil {
 			break
 		}
 	}

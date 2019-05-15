@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/stretchr/objx"
+
 	"log"
 
 	"github.com/gorilla/websocket"
 )
 
 type room struct {
-	forward chan []byte
+	forward chan *message
 	clients map[*client]bool
 	join    chan *client
 	leave   chan *client
@@ -19,7 +21,7 @@ type room struct {
 // NewRoom is generator of Room
 func NewRoom() *room {
 	return &room{
-		forward: make(chan []byte),
+		forward: make(chan *message),
 		clients: make(map[*client]bool),
 		join:    make(chan *client),
 		leave:   make(chan *client),
@@ -70,10 +72,16 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	authCookie, err := req.Cookie("auth")
+	if err != nil {
+		log.Fatal("クッキーの取得に失敗しました。")
+	}
+
 	client := &client{
-		socket: socket,
-		send:   make(chan []byte, messageBufferSize),
-		room:   r,
+		socket:   socket,
+		send:     make(chan *message, messageBufferSize),
+		room:     r,
+		userData: objx.MustFromBase64(authCookie.Value),
 	}
 
 	r.join <- client

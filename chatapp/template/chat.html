@@ -31,8 +31,8 @@
             alert("Error: There is no socket connection.");
             return false;
           }
-
-          socket.send(msgBox.val());
+          
+          socket.send(JSON.stringify({message: msgBox.val()}));
           msgBox.val("");
           return false;
         });
@@ -45,7 +45,15 @@
             alert("Connection has been closed.");
           };
           socket.onmessage = function(e) {
-            messages.append($("<li>").text(e.data));
+            data = JSON.parse(e.data)
+
+            messages.append(
+                  $("<li>").append(
+                  $("<strong>").text(data.name + ": "),
+                  $("<span>").text(data.message),
+                  $("<span>").text(" " + data.when)
+                )
+              );
           };
         }
       });
