@@ -46,9 +46,13 @@
           };
           socket.onmessage = function(e) {
             data = JSON.parse(e.data)
-
+            
             messages.append(
                   $("<li>").append(
+                  $("<img>").css({
+                    width: 50,
+                    verticalAlign: "middle",
+                  }).attr("src", data.avatar_url),
                   $("<strong>").text(data.name + ": "),
                   $("<span>").text(data.message),
                   $("<span>").text(" " + data.when)

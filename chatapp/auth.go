@@ -70,6 +70,7 @@ func loginHandler(w http.ResponseWriter, req *http.Request) {
 		// cookieをBase64変換した文字列を登録
 		authCookieValue := objx.New(map[string]interface{}{
 			"name": user.Name(),
+			"avatar_url": user.AvatarURL(),
 		}).MustBase64()
 
 		http.SetCookie(w, &http.Cookie{

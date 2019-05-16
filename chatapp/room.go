@@ -74,13 +74,14 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	authCookie, err := req.Cookie("auth")
 	if err != nil {
-		log.Fatal("クッキーの取得に失敗しました。")
+		log.Fatal("クッキーの取得に失敗しました。", err)
 	}
 
 	client := &client{
 		socket:   socket,
 		send:     make(chan *message, messageBufferSize),
 		room:     r,
+		// cookie情報をBase64からDecedeする。
 		userData: objx.MustFromBase64(authCookie.Value),
 	}
 
