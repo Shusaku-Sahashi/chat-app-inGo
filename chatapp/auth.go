@@ -75,7 +75,7 @@ func loginHandler(w http.ResponseWriter, req *http.Request) {
 		http.SetCookie(w, &http.Cookie{
 			Name: "auth",
 			Value: authCookieValue,
-			Path: "/chat",
+			Path: "/",
 		})
 
 		w.Header()["Location"] = []string{"/chat"}
