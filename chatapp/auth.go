@@ -86,3 +86,15 @@ func loginHandler(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintf(w, "アクション%sには非対応です。", action)
 	}
 }
+
+func logoutHandler(w http.ResponseWriter, req *http.Request) {
+	authCookie, err := req.Cookie("auth");
+	if err != nil { return }
+
+	authCookie.MaxAge = 0
+
+	http.SetCookie(w, authCookie)
+
+	w.Header().Set("Location", "/login")
+	w.WriteHeader(http.StatusTemporaryRedirect)
+}
