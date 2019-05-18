@@ -1,6 +1,12 @@
 package main
 
-import "testing"
+import (
+	"crypto/md5"
+	"fmt"
+	"io"
+	"strings"
+	"testing"
+)
 
 func TestAuthAvatar(t *testing.T) {
 	var authAvatar AuthAvatar
@@ -18,4 +24,26 @@ func TestAuthAvatar(t *testing.T) {
 	} else if url != testUrl {
 		t.Errorf("セットした値と返却された値が異なります。expected: %s, actual: %s", testUrl, url)
 	}
+}
+
+func TestGavater(t *testing.T) {
+	t.Run("対象の画像が取得可能", func(t *testing.T) {
+		var gravatar Gravatar
+		client := new(client)
+
+		email := "MyEmailAddress@example.com"
+		client.userData = map[string]interface{}{"email": email}
+		url, err := gravatar.AvatarURL(client)
+
+		m := md5.New()
+		io.WriteString(m, strings.ToLower(email))
+
+		expected := fmt.Sprintf("//www.gravatar.com/avatar/%x", m.Sum(nil))
+
+		if err == ErrorNoAvatarURL {
+			t.Error("エラー無くurlが取得できる必要があります。", err)
+		} else if url != expected {
+			t.Error("想定しているURLが取得できるべきです。", "actual: ", url, "expected: ", expected)
+		}
+	})
 }

@@ -16,7 +16,7 @@ type room struct {
 	clients map[*client]bool
 	join    chan *client
 	leave   chan *client
-	avatar Avatar
+	avatar  Avatar
 }
 
 // NewRoom is generator of Room
@@ -26,7 +26,7 @@ func NewRoom(avatar Avatar) *room {
 		clients: make(map[*client]bool),
 		join:    make(chan *client),
 		leave:   make(chan *client),
-		avatar: avatar,
+		avatar:  avatar,
 	}
 }
 
@@ -83,7 +83,6 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		socket:   socket,
 		send:     make(chan *message, messageBufferSize),
 		room:     r,
-		// cookie情報をBase64からDecedeする。
 		userData: objx.MustFromBase64(authCookie.Value),
 	}
 
