@@ -26,17 +26,18 @@ func TestAuthAvatar(t *testing.T) {
 	}
 }
 
-func TestGavater(t *testing.T) {
+func TestGravater(t *testing.T) {
 	t.Run("対象の画像が取得可能", func(t *testing.T) {
 		var gravatar Gravatar
 		client := new(client)
 
 		email := "MyEmailAddress@example.com"
-		client.userData = map[string]interface{}{"email": email}
-		url, err := gravatar.AvatarURL(client)
 
 		m := md5.New()
 		io.WriteString(m, strings.ToLower(email))
+
+		client.userData = map[string]interface{}{"user_id": fmt.Sprintf("%x", m.Sum(nil))}
+		url, err := gravatar.AvatarURL(client)
 
 		expected := fmt.Sprintf("//www.gravatar.com/avatar/%x", m.Sum(nil))
 

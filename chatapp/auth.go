@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"crypto/md5"
+	"io"
 
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/objx"
@@ -67,11 +69,16 @@ func loginHandler(w http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			log.Fatalln("ユーザの取得にしっぱいしました。", provider, err)
 		}
+
+		m := md5.New()
+		io.WriteString(m, strings.ToLower(user.Email()))
+		userId := m.Sum(nil)
+
 		// cookieをBase64変換した文字列を登録
 		authCookieValue := objx.New(map[string]interface{}{
 			"name": user.Name(),
 			"avatar_url": user.AvatarURL(),
-			"email": user.Email(),
+			"user_id": (fmt.Sprintf("%x", userId)),
 		}).MustBase64()
 
 		http.SetCookie(w, &http.Cookie{
