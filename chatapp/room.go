@@ -16,15 +16,17 @@ type room struct {
 	clients map[*client]bool
 	join    chan *client
 	leave   chan *client
+	avatar Avatar
 }
 
 // NewRoom is generator of Room
-func NewRoom() *room {
+func NewRoom(avatar Avatar) *room {
 	return &room{
 		forward: make(chan *message),
 		clients: make(map[*client]bool),
 		join:    make(chan *client),
 		leave:   make(chan *client),
+		avatar: avatar,
 	}
 }
 
