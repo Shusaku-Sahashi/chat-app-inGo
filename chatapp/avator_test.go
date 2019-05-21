@@ -4,6 +4,9 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -45,6 +48,35 @@ func TestGravater(t *testing.T) {
 			t.Error("エラー無くurlが取得できる必要があります。", err)
 		} else if url != expected {
 			t.Error("想定しているURLが取得できるべきです。", "actual: ", url, "expected: ", expected)
+		}
+	})
+}
+
+func TestFileAvatar(t *testing.T) {
+	t.Run("テスト用のファイルが取得できる。", func(t *testing.T) {
+		var fileSystemAvatar FileSystemAvatar
+
+		filename := filepath.Join("avatars", "abc.jpg")
+
+		ioutil.WriteFile(filename, []byte{}, 0600)
+		defer os.Remove(filename)
+
+		client := new(client)
+
+		_, err := fileSystemAvatar.AvatarURL(client)
+		if err != ErrorNoAvatarURL {
+			t.Error("URLが見つからない場合は、エラーが発生するべきです。")
+		}
+
+		client.userData = map[string]interface{}{"user_id": "abc"}
+
+		url, err := fileSystemAvatar.AvatarURL(client)
+		if err != nil {
+			t.Error("URLが見つからない場合はErrorが発生すべきです。")
+		}
+		
+		if url != "/" + filename {
+			t.Errorf("URLが想定と異なる値を返しました。 actual: %s, expected: %s", url, filename)
 		}
 	})
 }

@@ -41,12 +41,16 @@ func main() {
 	)
 
 	// r := NewRoom(UserAvatar)
-	r := NewRoom(UserGravatar)
+	// r := NewRoom(UserGravatar)
+	r := NewRoom(UserFileSysteAvatar)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
+	http.Handle("/upload", &templateHandler{filename: "upload.html"})
+	http.HandleFunc("/uploader", uploadFileHandler)
 	http.Handle("/login", &templateHandler{filename: "login.html"})
 	http.HandleFunc("/auth/", loginHandler)
 	http.HandleFunc("/logout", logoutHandler)
 	http.Handle("/room", r)
+	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))))
 	go r.Run()
 
 	//TODO: export conf to JSON or YAML file
